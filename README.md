@@ -15,3 +15,10 @@ paddlepaddle安装的模型：hub install deeplabv3p_xception65_humanseg==1.0.0
 
 注：
 此程序单次只能生成一个证件照
+
+UI图：
+![zjzsc](https://user-images.githubusercontent.com/88222209/135122015-a1e3a286-1961-4e18-9eff-4d4054c6e178.png)
+
+效果：
+![原图](https://user-images.githubusercontent.com/88222209/135122157-57704ff4-cf14-47f5-9aea-ec5ea42dede0.jpg)
+![效果图](https://user-images.githubusercontent.com/88222209/135122163-8ddcd7c8-9643-4292-b49a-788f0f82707f.png)
