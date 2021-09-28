@@ -16,6 +16,8 @@ UI:pip install win32ui;pip install PyQt5;pip install pillow;pip install opencv-p
 
 注：
 此程序单次只能生成一个证件照
+humanseg==1.0.0为必须，否则会安装失败。
+下载.py.icon.xml这三个文件于同一文件夹应该就可以运行。
 
 UI图：
 ![zjzsc](https://user-images.githubusercontent.com/88222209/135122015-a1e3a286-1961-4e18-9eff-4d4054c6e178.png)
