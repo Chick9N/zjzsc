@@ -8,6 +8,7 @@ import paddlehub as hub
 import cv2
 from PIL import Image
 
+
 global img, color, size
 
 
@@ -144,7 +145,7 @@ def getpath():  # 用来获取图片路径path的函数
     img1 = os.path.abspath(dlg.GetPathName())  # 获取选择的照片的路径
     # 判断是否为图片类型
     tail = os.path.splitext(img1)[1]
-    if os.path.exists(img1) == True and (tail == '.img' or tail == '.png' or tail == '.jpeg' or tail == '.jpg'):
+    if os.path.exists(img1) and (tail == '.img' or tail == '.png' or tail == '.jpeg' or tail == '.jpg'):
         window.label3.setStyleSheet('color:green')
         window.label3.setText('*照片选择成功')
     else:
@@ -156,7 +157,7 @@ def ImgProcess():
     if os.path.exists(r'humanseg_output'):
         for i in os.listdir(r'humanseg_output'):
             pic1 = r'humanseg_output' + "//" + i
-            if os.path.isfile(pic1) == True:
+            if os.path.isfile(pic1):
                 os.remove(pic1)
                 pic1 = None
 
@@ -173,8 +174,7 @@ def ImgProcess():
     path1 = r'humanseg_output/' + b
     img2 = cv2.imread(path1)
     gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-    face_cascade = cv2.CascadeClassifier(
-        'C:/Users/FriedChicken/AppData/Roaming/Python/Python37/site-packages/cv2/data/haarcascade_frontalface_alt2.xml')
+    face_cascade = cv2.CascadeClassifier(r'haarcascade_frontalface_alt2.xml')
     faces = face_cascade.detectMultiScale(gray)
     result = []  # 存坐标用
     for (x0, y0, width, height) in faces:
@@ -188,27 +188,33 @@ def ImgProcess():
     w = im.width
     # 左上角坐标
     if size == 1:
-        ratio = 413 // 295
+        ratio = 1.4  # 413 / 295
     if size == 2:
-        ratio = 626 // 416
-    x1 = centerx - int(width // 2 * 1.5)
-    y1 = centery - height * ratio
-    # 防止超坐标
-    if x1 < 0:
-        x1 = 0
-    if y1 < 0:
-        y1 = 0
+        ratio = 1.5  # 626 / 416
+    x1 = centerx - height
+    y1 = centery - int(height * ratio)
     # 右下角坐标(开区间
-    x2 = centerx + int(width // 2 * 1.5)
-    y2 = centery + height * ratio
+    x2 = centerx + height
+    y2 = centery + int(height * ratio)
     # 防止超坐标
-    if x2 > w:
-        x2 = w - 1
-    if y2 > h:
-        x2 = h - 1
+    if x1 < 0 or y1 < 0 or x2 > w or y2 > h:
+        minx = [centerx, w - centerx]
+        miny = [centery, h - centery]
+        _minx = min(minx)
+        _miny = min(miny)
+        if _miny / ratio <= _minx:
+            x1 = centerx - _miny / ratio
+            y1 = centery - _miny
+            x2 = centerx + _miny / ratio
+            y2 = centery + _miny
+        else:
+            x1 = centerx - _minx
+            y1 = centery - _minx * ratio
+            x2 = centerx + _minx
+            y2 = centery + _minx * ratio
+
 
     # 按坐标截取
-    im = Image.open(path1)
     cut = im.crop((x1, y1, x2, y2))
     cut.save('cut.png')
 
@@ -233,8 +239,7 @@ def ImgProcess():
     for x in range(im.shape[0]):  # 图片的高
         for y in range(im.shape[1]):  # 图片的宽
             px = im[x, y]
-            # print(px)  # 每个点的bgra值
-            if px[3] == 0:  # 判断是不是透明像素，如果是...
+            if px[3] <= 215:  # 填充完全及部分透明像素
                 im[x, y] = [b, g, r, a]
     cv2.imwrite('zjz.png', im)
 
